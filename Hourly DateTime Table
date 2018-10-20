@@ -1,0 +1,12 @@
+//THIS IS THE BASIC LIST SETUP FOR JUST THE DATE STRING
+let
+    Source = #datetime(firstYearAC,1,1,0,0,0), //firstYearAC is a parameter for the first year
+    Custom1 = List.DateTimes(
+                                Source
+                                ,(Number.From(#date(lastYear,01,01))-Number.From(Source))*24
+                                ,#duration(0,1,0,0)), //lastYear is a parameter for last year of data
+    #"Converted to Table" = Table.FromList(Custom1, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+    #"Renamed Columns" = Table.RenameColumns(#"Converted to Table",{{"Column1", "_DateTime"}}),
+    #"Changed Type" = Table.TransformColumnTypes(#"Renamed Columns",{{"_DateTime", type datetime}})
+in
+    #"Changed Type"
