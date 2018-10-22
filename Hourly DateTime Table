@@ -1,4 +1,3 @@
-//THIS IS THE BASIC LIST SETUP FOR JUST THE DATE STRING
 let
     Source = #datetime(firstYearAC,1,1,0,0,0), //firstYearAC is a parameter for the first year
     Custom1 = List.DateTimes(
@@ -7,6 +6,10 @@ let
                                 ,#duration(0,1,0,0)), //lastYear is a parameter for last year of data
     #"Converted to Table" = Table.FromList(Custom1, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
     #"Renamed Columns" = Table.RenameColumns(#"Converted to Table",{{"Column1", "_DateTime"}}),
-    #"Changed Type" = Table.TransformColumnTypes(#"Renamed Columns",{{"_DateTime", type datetime}})
+    #"Changed Type" = Table.TransformColumnTypes(#"Renamed Columns",{{"_DateTime", type datetime}}),
+    YearQtr = Table.AddColumn(#"Changed Type", "YearQtr", each Text.Combine({Number.ToText(Date.Year([_DateTime])),"Q",Number.ToText(Date.QuarterOfYear([_DateTime]))},"")),
+    MonthDayHour = Table.AddColumn(YearQtr, "MonthDayHour", each Text.Combine({Date.ToText(DateTime.Date([_DateTime]), "MMdd"),Text.PadStart(Number.ToText(Time.Hour([_DateTime])+1),2,"0")},"")),
+    #"Removed LeapDays" = Table.SelectRows(MonthDayHour, each not Text.StartsWith([MonthDayHour], "0229")),
+    #"Added Index" = Table.AddIndexColumn(#"Removed LeapDays", "Index", 1, 1)
 in
-    #"Changed Type"
+    #"Added Index"
