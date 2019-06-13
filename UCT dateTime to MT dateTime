@@ -1,0 +1,7 @@
+let
+    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("ddIxTgNRDEXRvaQGacbvDQTWkYoo+98GvwTpH8ndLSxb5/m8zXHe349zzeP4+j6ONT+319u/cB4Kp8IoRKEKl8KHwqfCXUGXjy4fXT66fPaXz+PY71hhv2OF/Y4VuGP/3RX2311h/90V9t9dYf/dkauRq5GrkauRq5GrkauRq5GrkauRq5GrkauRq5GryFXkKnIVuYpcRa4iV5GryFXkKnIVuYpcRa4iV5GryFXkKnIVuYpcRa4iV5GrylXlqnJVuapcVa4qV5WrylXlqnJVuapcVa4qV5WrylXlqnJVuapcVa4qV5WrS64uubrk6pKr66+r1y8=", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type text) meta [Serialized.Text = true]) in type table [INTERVAL_END_TIME = _t]),
+    #"Changed Type" = Table.TransformColumnTypes(Source,{{"INTERVAL_END_TIME", type datetime}}),
+    #"Added Custom" = Table.AddColumn(#"Changed Type", "MT Date Time", each DateTimeZone.SwitchZone(DateTime.AddZone([INTERVAL_END_TIME],0),-8)),
+    #"Changed Type1" = Table.TransformColumnTypes(#"Added Custom",{{"MT Date Time", type datetime}})
+in
+    #"Changed Type1"
